@@ -2,53 +2,81 @@
 #
 # Copyright (c) 2025 AnonymousDapper
 
-from __future__ import annotations
+# pyright: reportImplicitOverride=false
 
 __all__ = (
+    "alpha",
+    "and_",
+    "apply",
+    "between",
+    "bind",
+    "BytesParserInput",
+    "choice",
+    "crlf",
+    "defer",
+    "digit",
+    "end_of_line",
+    "eof",
+    "Err",
+    "fail_with",
+    "is_err",
+    "is_none",
+    "is_ok",
+    "is_some",
+    "left",
+    "lift2",
+    "literal",
+    "many",
+    "many1",
+    "map_",
+    "newline",
+    "none_of",
+    "Nothing",
+    "Ok",
+    "one_of",
+    "opt",
+    "Option",
+    "or_",
     "parse_string",
     "Parser",
-    "StringParserInput",
+    "ParserError",
     "ParseResult",
-    "print_result",
-    "defer",
-    "many",
-    "defer",
+    "ParserInput",
+    "ParserValue",
     "pure",
+    "regex",
+    "regex_captures",
+    "Result",
+    "right",
+    "sep_by",
+    "sep_by1",
     "seq",
-    "literal",
-    "any_",
-    "one_of",
-    "none_of",
-    "eof",
-    "between",
+    "Some",
     "space",
     "spaces",
-    "letter",
-    "digit",
-    "string",
-    "newline",
-    "crlf",
-    "end_of_line",
-    "binary",
-    "octal",
-    "hexadecimal",
-    "decimal",
-    "natural",
-    "Result",
-    "Ok",
-    "Err",
-    "Option",
-    "Some",
-    "Nothing",
+    "string_",
+    "StringParserInput",
+    "succeed_with",
+    "times",
 )
 
-from .parsing import *
-from .utils import *
+
+from yapl import parser
+
+from .functional import *
+from .parser import *
 
 
 def parse_string[a](p: Parser[str, a]):
     def inner(s: str):
+        parser._COUNT = iter(parser.itertools.count())
         r = p.run(StringParserInput(s))
-        return print_result(r)
+        match r:
+            case Ok(v):
+                print(f"Success: {v.item!r}")
+                print(f"{next(parser._COUNT)-1} cycles")
+
+            case Err(e):
+                e.print_err()
 
     return inner
